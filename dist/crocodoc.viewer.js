@@ -2731,7 +2731,7 @@ Crocodoc.addComponent('controller-paged', function (scope) {
             // Setup container
             $el = config.$el;
 
-            $(document).on('mouseup', handleMouseUp);
+            $(document).bind('mouseup', handleMouseUp);
 
             validateConfig();
             prepareDOM();
@@ -2747,7 +2747,7 @@ Crocodoc.addComponent('controller-paged', function (scope) {
          */
         destroy: function () {
             // remove document event handlers
-            $(document).off('mouseup', handleMouseUp);
+            $(document).unbind('mouseup');
         }
     };
 });
@@ -2826,8 +2826,8 @@ Crocodoc.addComponent('dragger', function (scope) {
      */
     function handleMouseup(event) {
         scope.broadcast('dragend');
-        $window.off('mousemove', handleMousemove);
-        $window.off('mouseup', handleMouseup);
+        $window.unbind('mousemove');
+        $window.unbind('mouseup');
         event.preventDefault();
     }
 
@@ -2846,8 +2846,8 @@ Crocodoc.addComponent('dragger', function (scope) {
             x: event.clientX,
             y: event.clientY
         };
-        $window.on('mousemove', handleMousemove);
-        $window.on('mouseup', handleMouseup);
+        $window.bind('mousemove', handleMousemove);
+        $window.bind('mouseup', handleMouseup);
         event.preventDefault();
     }
 
@@ -2863,7 +2863,7 @@ Crocodoc.addComponent('dragger', function (scope) {
          */
         init: function (el) {
             $el = $(el);
-            $el.on('mousedown', handleMousedown);
+            $el.bind('mousedown', handleMousedown);
         },
 
         /**
@@ -2871,9 +2871,9 @@ Crocodoc.addComponent('dragger', function (scope) {
          * @returns {void}
          */
         destroy: function () {
-            $el.off('mousedown', handleMousedown);
-            $el.off('mousemove', handleMousemove);
-            $window.off('mouseup', handleMouseup);
+            $el.unbind('mousedown');
+            $el.unbind('mousemove');
+            $window.unbind('mouseup');
         }
     };
 });
@@ -5213,7 +5213,7 @@ Crocodoc.addComponent('page-links', function (scope) {
             // the onclick event first)
             $('<span>')
                 .appendTo($link)
-                .on('click', handleClick);
+                .bind('click', handleClick);
         }
 
         $link.css({
@@ -5275,7 +5275,7 @@ Crocodoc.addComponent('page-links', function (scope) {
             if (!browser.ie) {
                 // @NOTE: event handlers are individually bound in IE, because
                 // the ctrl+click workaround fails when using event delegation
-                $el.on('click', '.' + CSS_CLASS_PAGE_LINK, handleClick);
+                $el.bind('click', '.' + CSS_CLASS_PAGE_LINK, handleClick);
             }
         },
 
@@ -5286,7 +5286,7 @@ Crocodoc.addComponent('page-links', function (scope) {
         destroy: function () {
             // @NOTE: individual click event handlers needed for IE are
             // implicitly removed by jQuery when we empty the links container
-            $el.empty().off('click');
+            $el.empty().unbind('click');
             $el = browser = null;
         },
 
@@ -6094,7 +6094,7 @@ Crocodoc.addComponent('resizer', function (scope) {
             $(element).css({ position: 'relative' });
         }
         $window = $($iframe[0].contentWindow);
-        $window.on('resize', checkResize);
+        $window.bind('resize', checkResize);
     }
 
     /**
@@ -6161,12 +6161,12 @@ Crocodoc.addComponent('resizer', function (scope) {
             // if we are using the window as the viewport
             if (element === window) {
                 element = document.documentElement;
-                $window.on('resize', checkResize);
+                $window.bind('resize', checkResize);
             } else {
                 initResizer();
             }
 
-           $document.on(FULLSCREENCHANGE_EVENT, checkResize);
+           $document.bind(FULLSCREENCHANGE_EVENT, checkResize);
 
             checkResize();
         },
@@ -6176,8 +6176,8 @@ Crocodoc.addComponent('resizer', function (scope) {
          * @returns {void}
          */
         destroy: function () {
-            $document.off(FULLSCREENCHANGE_EVENT, checkResize);
-            $window.off('resize', checkResize);
+            $document.unbind(FULLSCREENCHANGE_EVENT);
+            $window.unbind('resize');
         }
     };
 });
@@ -6318,10 +6318,10 @@ Crocodoc.addComponent('scroller', function (scope) {
          */
         init: function (el) {
             $el = $(el);
-            $el.on('scroll', handleScroll);
-            $el.on('touchstart', handleTouchstart);
-            $el.on('touchmove', handleTouchmove);
-            $el.on('touchend', handleTouchend);
+            $el.bind('scroll', handleScroll);
+            $el.bind('touchstart', handleTouchstart);
+            $el.bind('touchmove', handleTouchmove);
+            $el.bind('touchend', handleTouchend);
         },
 
         /**
@@ -6330,10 +6330,10 @@ Crocodoc.addComponent('scroller', function (scope) {
          */
         destroy: function () {
             clearTimeout(scrollendTID);
-            $el.off('scroll', handleScroll);
-            $el.off('touchstart', handleTouchstart);
-            $el.off('touchmove', handleTouchmove);
-            $el.off('touchend', handleTouchend);
+            $el.unbind('scroll');
+            $el.unbind('touchstart');
+            $el.unbind('touchmove');
+            $el.unbind('touchend');
         }
     };
 });
@@ -6732,7 +6732,7 @@ Crocodoc.addComponent('viewer-base', function (scope) {
 
             $loadMetadataPromise = scope.get('metadata');
             $loadMetadataPromise.then(function handleMetadataResponse(metadata) {
-                config.metadata = metadata;
+                config.metadata = JSON.parse( metadata );
             });
 
             // don't load the stylesheet for IE < 9
